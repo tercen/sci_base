@@ -178,7 +178,7 @@ abstract class HttpClientService<T extends base.PersistentBase>
     T? answer;
     try {
       var response = await client.put(getServiceUri(uri),
-          headers: contentCodec.contentTypeHeader,
+          headers: getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode(toJson(object)),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
@@ -225,8 +225,10 @@ abstract class HttpClientService<T extends base.PersistentBase>
       var queryParameters = {'id': id};
       queryParameters['useFactory'] = useFactory.toString();
 
-      var response = await client
-          .head(getServiceUri(uri).replace(queryParameters: queryParameters));
+      var response = await client.head(
+        getServiceUri(uri).replace(queryParameters: queryParameters),
+        headers: getHeaderForAclContext(null, aclContext),
+      );
       if (response.statusCode != 200) {
         onResponseError(response);
       } else {
@@ -241,6 +243,16 @@ abstract class HttpClientService<T extends base.PersistentBase>
     return answer!;
   }
 
+  Map<String, String>? getHeaderForAclContext(
+      Map<String, String>? headers, AclContext? aclContext) {
+    Map<String, String>? headers;
+    if (aclContext is AclTokenContextImpl) {
+      headers ??= <String, String>{};
+      headers['authorization'] = aclContext.authorization;
+    }
+    return headers;
+  }
+
   @override
   Future<T> get(String id,
       {bool useFactory = true, AclContext? aclContext}) async {
@@ -251,6 +263,7 @@ abstract class HttpClientService<T extends base.PersistentBase>
 
       var response = await client.get(
           getServiceUri(uri).replace(queryParameters: queryParameters),
+          headers: getHeaderForAclContext(null, aclContext),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
         onResponseError(response);
@@ -292,7 +305,9 @@ abstract class HttpClientService<T extends base.PersistentBase>
       {AclContext? aclContext, bool force = false}) async {
     try {
       var response = await client.delete(
-          getServiceUri(uri).replace(queryParameters: {'id': id, 'rev': rev}));
+        getServiceUri(uri).replace(queryParameters: {'id': id, 'rev': rev}),
+        headers: getHeaderForAclContext(null, aclContext),
+      );
       if (response.statusCode != 200) {
         onResponseError(response);
       }
@@ -325,7 +340,8 @@ abstract class HttpClientService<T extends base.PersistentBase>
   Future<String> update(T object, {AclContext? aclContext}) async {
     try {
       var response = await client.post(getServiceUri(uri),
-          headers: contentCodec.contentTypeHeader,
+          headers:
+              getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode(toJson(object)),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
@@ -353,7 +369,8 @@ abstract class HttpClientService<T extends base.PersistentBase>
           getServiceUri(uri).replace(
               path: '${getServiceUri(uri).path}/listNotFound',
               queryParameters: queryParameters),
-          headers: contentCodec.contentTypeHeader,
+          headers:
+              getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode(ids),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
@@ -381,7 +398,8 @@ abstract class HttpClientService<T extends base.PersistentBase>
           getServiceUri(uri).replace(
               path: '${getServiceUri(uri).path}/list',
               queryParameters: queryParameters),
-          headers: contentCodec.contentTypeHeader,
+          headers:
+              getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode(ids),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
@@ -414,7 +432,8 @@ abstract class HttpClientService<T extends base.PersistentBase>
           getServiceUri(uri).replace(
               path: '${getServiceUri(uri).path}/$viewName',
               queryParameters: queryParameters),
-          headers: contentCodec.contentTypeHeader,
+          headers:
+              getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode({
             'startKey': startKey,
             'endKey': endKey,
@@ -449,7 +468,8 @@ abstract class HttpClientService<T extends base.PersistentBase>
           getServiceUri(uri).replace(
               path: '${getServiceUri(uri).path}/$viewName',
               queryParameters: queryParameters),
-          headers: contentCodec.contentTypeHeader,
+          headers:
+              getHeaderForAclContext(contentCodec.contentTypeHeader, aclContext),
           body: contentCodec.encode(keys),
           responseType: contentCodec.responseType);
       if (response.statusCode != 200) {
