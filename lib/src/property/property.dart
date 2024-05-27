@@ -90,22 +90,21 @@ class Property extends Value<dynamic> {
 class EnumerationProperty extends Property {
   List<dynamic> enumeration;
   late List<String> displayEnumeration;
+  bool isSingleSelection;
 
-  EnumerationProperty(String name, value, this.enumeration,
-      {String? displayName,
-      String displayType = Property.TEXT_DISPLAY_TYPE,
-      List<String>? displayEnumeration,
-      String info = '',
-      bool required = false,
-      bool enable = true,
-      String description = ''})
-      : super(name, value,
-            displayName: displayName,
-            displayType: displayType,
-            info: info,
-            required: required,
-            enable: enable,
-            description: description) {
+  EnumerationProperty(
+    super.name,
+    super.value,
+    this.enumeration, {
+    super.displayName,
+    super.displayType,
+    super.info,
+    super.required,
+    super.enable,
+    super.description,
+    this.isSingleSelection = true,
+    List<String>? displayEnumeration,
+  }) {
     if (displayEnumeration == null) {
       this.displayEnumeration = enumeration as List<String>;
     } else {
