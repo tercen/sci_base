@@ -106,7 +106,7 @@ class EnumerationProperty extends Property {
     List<String>? displayEnumeration,
   }) {
     if (displayEnumeration == null) {
-      this.displayEnumeration = enumeration as List<String>;
+      this.displayEnumeration = enumeration.map((e) => e.toString()).toList();
     } else {
       this.displayEnumeration = displayEnumeration;
     }
