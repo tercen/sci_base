@@ -8,8 +8,10 @@ class Property extends Value<dynamic> {
   static const String TEXT_DISPLAY_TYPE = 'text';
   static const String PASSWORD_DISPLAY_TYPE = 'password';
   static const String CHECK_BOX_DISPLAY_TYPE = 'checkbox';
+  static const String BUTTON_DISPLAY_TYPE = 'button';
 
   static const String STRING_VALUE_TYPE = 'string';
+  static const String COLOR_VALUE_TYPE = 'color';
   static const String DOUBLE_VALUE_TYPE = 'double';
   static const String BOOL_VALUE_TYPE = 'bool';
 
@@ -57,6 +59,8 @@ class Property extends Value<dynamic> {
     return super.onChange;
   }
 
+  dynamic get innerValue => _value;
+
   @override
   dynamic get value {
     if (_value is Value) {
@@ -64,6 +68,13 @@ class Property extends Value<dynamic> {
     }
 
     return _value;
+  }
+
+  void setBuffer() {
+    if (_value is Value && _value is! ValueBuffer) {
+      print("$this -- set buffer");
+      _value = (_value as Value).asBuffer();
+    }
   }
 
   @override
